@@ -13,15 +13,14 @@ router.post('/',async (req, res)=>{
     body.idadministrador = idadmin
     body.contrasenna_hash = hash
 
+    console.log(body);
     await Admin.Create(body);
 
     jwt.sign({
-        
         idadministrador: body.idadministrador,
         usuario : body.usuario,
         contrasenna : body.contrasenna,
         contrasenna_hash : body.contrasenna_hash
-
     }, process.env.TOKEN_SECRET,{expiresIn : '1d'},(err, token)=>{
         if (err) {
             res.status(400).send({message : 'Error'})
@@ -30,6 +29,7 @@ router.post('/',async (req, res)=>{
     })
     
 });
+
 router.get('/signin',async (req,res, next)=>{
     const user = req.headers['user-name'] || ''
     // Validamos si el usuario esta en nuestra base de datos
@@ -41,7 +41,8 @@ router.get('/signin',async (req,res, next)=>{
         console.log(error);
         res.sendStatus(500);        
     }
-})
+});
+
 router.get('/signin', async (req, res)=>{
     try {
         const user = req.headers['user-name'] || ''

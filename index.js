@@ -9,7 +9,7 @@ const admin = require('./routes/admin');
 const product = require('./routes/products');
 const clients = require('./routes/clients');
 const credits = require('./routes/credits');
-
+const test_mysql = require('./routes/test');
 
 // Middlewares
 app.use(cors())
@@ -20,6 +20,7 @@ app.use('/costumer', costumer);
 app.use('/product',product);
 app.use('/client', clients);
 app.use('/credits',credits);
+app.use('/test',test_mysql);
 
 app.listen(PORT,()=>{
     console.log(`Server running on http://localhost:${PORT}`);

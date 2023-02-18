@@ -1,0 +1,448 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema pipo_database
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema pipo_database
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `pipo_database` DEFAULT CHARACTER SET utf8 ;
+USE `pipo_database` ;
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`direccion`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`direccion` (
+  `iddireccion` INT NOT NULL,
+  `direccion` VARCHAR(100) NULL,
+  `ciudad` VARCHAR(100) NULL,
+  PRIMARY KEY (`iddireccion`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`persona`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`persona` (
+  `idpersona` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NOT NULL,
+  `apellido` VARCHAR(100) NOT NULL,
+  `fecha_cumpleannos` DATE NULL,
+  `fecha_creacion` DATE NULL,
+  `telefono` INT NULL,
+  `razon_social` INT NULL,
+  PRIMARY KEY (`idpersona`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`calificacion`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`calificacion` (
+  `idcalificacion` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NULL,
+  `valor` TINYINT NULL,
+  PRIMARY KEY (`idcalificacion`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`cliente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`cliente` (
+  `idcliente` VARCHAR(100) NOT NULL,
+  `persona_idpersona` INT NOT NULL,
+  `credito_limite` FLOAT NULL,
+  `ultimo_pago` DATE NULL,
+  `saldo` FLOAT NULL,
+  `calificacion_idcalificacion` INT NOT NULL,
+  `direccion_iddireccion` INT NOT NULL,
+  PRIMARY KEY (`idcliente`, `persona_idpersona`),
+  INDEX `fk_cliente_persona1_idx` (`persona_idpersona` ASC) VISIBLE,
+  INDEX `fk_cliente_calificacion1_idx` (`calificacion_idcalificacion` ASC) VISIBLE,
+  INDEX `fk_cliente_direccion1_idx` (`direccion_iddireccion` ASC) VISIBLE,
+  CONSTRAINT `fk_cliente_persona1`
+    FOREIGN KEY (`persona_idpersona`)
+    REFERENCES `pipo_database`.`persona` (`idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cliente_calificacion1`
+    FOREIGN KEY (`calificacion_idcalificacion`)
+    REFERENCES `pipo_database`.`calificacion` (`idcalificacion`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cliente_direccion1`
+    FOREIGN KEY (`direccion_iddireccion`)
+    REFERENCES `pipo_database`.`direccion` (`iddireccion`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`nota_credito`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`nota_credito` (
+  `idnota_credito` INT NOT NULL AUTO_INCREMENT,
+  `fecha_de_emision` DATE NOT NULL,
+  `fecha_vencimiento` DATE NULL,
+  `descuento_global` FLOAT NULL DEFAULT 0,
+  `total_descuento` FLOAT NULL DEFAULT 0,
+  `total` FLOAT NULL,
+  `observaciones` VARCHAR(200) NULL,
+  `tipo_de_cambio` INT NULL,
+  `cliente_idcliente` INT NOT NULL,
+  `cliente_persona_idpersona` INT NOT NULL,
+  PRIMARY KEY (`idnota_credito`, `cliente_idcliente`, `cliente_persona_idpersona`),
+  INDEX `fk_nota_credito_cliente1_idx` (`cliente_idcliente` ASC, `cliente_persona_idpersona` ASC) VISIBLE,
+  CONSTRAINT `fk_nota_credito_cliente1`
+    FOREIGN KEY (`cliente_idcliente` , `cliente_persona_idpersona`)
+    REFERENCES `pipo_database`.`cliente` (`idcliente` , `persona_idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`marca`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`marca` (
+  `idmarca` INT NOT NULL,
+  `nombre` VARCHAR(100) NULL,
+  PRIMARY KEY (`idmarca`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`images`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`images` (
+  `idimages` INT NOT NULL,
+  `public_id` VARCHAR(200) NULL,
+  `url` VARCHAR(200) NULL,
+  `url_secure` VARCHAR(200) NULL,
+  `upload_at` VARCHAR(200) NULL,
+  PRIMARY KEY (`idimages`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`producto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`producto` (
+  `idproducto` VARCHAR(100) NOT NULL,
+  `codigo` VARCHAR(100) NOT NULL,
+  `nombre` VARCHAR(100) NULL,
+  `color` VARCHAR(100) NULL,
+  `stock` INT NULL,
+  `precio_unitario` FLOAT NOT NULL,
+  `marca_idmarca` INT NOT NULL,
+  `images_idimages` INT NOT NULL,
+  PRIMARY KEY (`idproducto`, `marca_idmarca`),
+  INDEX `fk_producto_marca1_idx` (`marca_idmarca` ASC) VISIBLE,
+  INDEX `fk_producto_images1_idx` (`images_idimages` ASC) VISIBLE,
+  CONSTRAINT `fk_producto_marca1`
+    FOREIGN KEY (`marca_idmarca`)
+    REFERENCES `pipo_database`.`marca` (`idmarca`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_producto_images1`
+    FOREIGN KEY (`images_idimages`)
+    REFERENCES `pipo_database`.`images` (`idimages`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`items_nota_credito`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`items_nota_credito` (
+  `iditems` INT NOT NULL,
+  `producto_idproducto` INT NOT NULL,
+  `descripcion` VARCHAR(100) NULL,
+  `cantidad` INT NOT NULL DEFAULT 1,
+  `descuento_unitario` INT NULL DEFAULT 0,
+  `subtotal` INT NOT NULL,
+  PRIMARY KEY (`iditems`, `producto_idproducto`),
+  INDEX `fk_nota_credito_has_producto_producto1_idx` (`producto_idproducto` ASC) VISIBLE,
+  INDEX `fk_nota_credito_has_producto_nota_credito1_idx` (`iditems` ASC) VISIBLE,
+  CONSTRAINT `fk_nota_credito_has_producto_nota_credito1`
+    FOREIGN KEY (`iditems`)
+    REFERENCES `pipo_database`.`nota_credito` (`idnota_credito`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_nota_credito_has_producto_producto1`
+    FOREIGN KEY (`producto_idproducto`)
+    REFERENCES `pipo_database`.`producto` (`idproducto`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`almacen`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`almacen` (
+  `idalmacen` INT NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(100) NULL,
+  `nombre_almacen` VARCHAR(100) NULL,
+  PRIMARY KEY (`idalmacen`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`estado`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`estado` (
+  `idestado` INT NOT NULL,
+  `valor` VARCHAR(100) NULL,
+  PRIMARY KEY (`idestado`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`vendedor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`vendedor` (
+  `idvendedor` VARCHAR(100) NOT NULL,
+  `persona_idpersona` INT NOT NULL,
+  `usuario` VARCHAR(100) NOT NULL,
+  `contrasenna` VARCHAR(100) NOT NULL,
+  `contrasenna_hash` VARCHAR(200) NOT NULL,
+  `estado_idestado` INT NOT NULL,
+  PRIMARY KEY (`idvendedor`, `persona_idpersona`, `estado_idestado`),
+  INDEX `fk_vendedor_persona1_idx` (`persona_idpersona` ASC) VISIBLE,
+  INDEX `fk_vendedor_estado1_idx` (`estado_idestado` ASC) VISIBLE,
+  CONSTRAINT `fk_vendedor_persona1`
+    FOREIGN KEY (`persona_idpersona`)
+    REFERENCES `pipo_database`.`persona` (`idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_vendedor_estado1`
+    FOREIGN KEY (`estado_idestado`)
+    REFERENCES `pipo_database`.`estado` (`idestado`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`administrador`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`administrador` (
+  `idadministrador` VARCHAR(100) NOT NULL,
+  `usuario` VARCHAR(100) NOT NULL,
+  `contrasenna` VARCHAR(100) NOT NULL,
+  `contrasenna_hash` VARCHAR(200) NOT NULL,
+  `token` VARCHAR(100) NULL,
+  `persona_idpersona` INT NOT NULL,
+  PRIMARY KEY (`idadministrador`, `persona_idpersona`),
+  INDEX `fk_administrador_persona1_idx` (`persona_idpersona` ASC) VISIBLE,
+  CONSTRAINT `fk_administrador_persona1`
+    FOREIGN KEY (`persona_idpersona`)
+    REFERENCES `pipo_database`.`persona` (`idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`user`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`user` (
+  `iduser` INT NOT NULL,
+  `username` VARCHAR(100) NOT NULL,
+  `user` VARCHAR(100) NULL,
+  `email` VARCHAR(100) NULL,
+  `password` VARCHAR(100) NOT NULL,
+  `create_time` DATE NULL,
+  PRIMARY KEY (`iduser`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`user`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`user` (
+  `iduser` INT NOT NULL,
+  `username` VARCHAR(100) NOT NULL,
+  `user` VARCHAR(100) NULL,
+  `email` VARCHAR(100) NULL,
+  `password` VARCHAR(100) NOT NULL,
+  `create_time` DATE NULL,
+  PRIMARY KEY (`iduser`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`image`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`image` (
+  `idimage` BIGINT(20) NOT NULL,
+  `public_id` VARCHAR(100) NOT NULL,
+  `tite` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(100) NULL,
+  `url` VARCHAR(200) NULL,
+  `url_secure` VARCHAR(200) NULL,
+  `created_at` TIMESTAMP NULL,
+  `likes` INT NULL DEFAULT 0,
+  `user_iduser` INT NOT NULL,
+  PRIMARY KEY (`idimage`),
+  UNIQUE INDEX `public_id_UNIQUE` (`public_id` ASC) VISIBLE,
+  INDEX `fk_image_user1_idx` (`user_iduser` ASC) VISIBLE,
+  CONSTRAINT `fk_image_user1`
+    FOREIGN KEY (`user_iduser`)
+    REFERENCES `pipo_database`.`user` (`iduser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`comentarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`comentarios` (
+  `idcomentarios` INT NOT NULL,
+  `content` VARCHAR(100) NULL,
+  `user_iduser` INT NOT NULL,
+  PRIMARY KEY (`idcomentarios`, `user_iduser`),
+  INDEX `fk_comentarios_user1_idx` (`user_iduser` ASC) VISIBLE,
+  CONSTRAINT `fk_comentarios_user1`
+    FOREIGN KEY (`user_iduser`)
+    REFERENCES `pipo_database`.`user` (`iduser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`profileImage`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`profileImage` (
+  `idprofileImage` INT NOT NULL,
+  `public_id` VARCHAR(100) NULL,
+  `url` VARCHAR(200) NULL,
+  `secure_url` VARCHAR(200) NULL,
+  `user_iduser` INT NOT NULL,
+  PRIMARY KEY (`idprofileImage`, `user_iduser`),
+  UNIQUE INDEX `public_id_UNIQUE` (`public_id` ASC) VISIBLE,
+  INDEX `fk_profileImage_user1_idx` (`user_iduser` ASC) VISIBLE,
+  CONSTRAINT `fk_profileImage_user1`
+    FOREIGN KEY (`user_iduser`)
+    REFERENCES `pipo_database`.`user` (`iduser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`proveedor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`proveedor` (
+  `idproveedor` INT NOT NULL,
+  `razon_social` INT NULL,
+  `nombre` VARCHAR(200) NULL,
+  `telefono` INT NULL,
+  PRIMARY KEY (`idproveedor`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`tipo_pedido`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`tipo_pedido` (
+  `idtipo_pedido` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NULL,
+  PRIMARY KEY (`idtipo_pedido`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`lote_productos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`lote_productos` (
+  `idlote_productos` INT NOT NULL,
+  `proveedor_idproveedor` INT NOT NULL,
+  `almacen_idalmacen` INT NOT NULL,
+  `fecha_llegada` DATE NULL,
+  `idtipo_pedido` INT NOT NULL,
+  `nro_ref` BIGINT(20) NULL,
+  PRIMARY KEY (`idlote_productos`),
+  INDEX `fk_lote_productos_proveedor1_idx` (`proveedor_idproveedor` ASC) VISIBLE,
+  INDEX `fk_lote_productos_almacen1_idx` (`almacen_idalmacen` ASC) VISIBLE,
+  INDEX `fk_lote_productos_tipo_pedido1_idx` (`idtipo_pedido` ASC) VISIBLE,
+  CONSTRAINT `fk_lote_productos_proveedor1`
+    FOREIGN KEY (`proveedor_idproveedor`)
+    REFERENCES `pipo_database`.`proveedor` (`idproveedor`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_lote_productos_almacen1`
+    FOREIGN KEY (`almacen_idalmacen`)
+    REFERENCES `pipo_database`.`almacen` (`idalmacen`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_lote_productos_tipo_pedido1`
+    FOREIGN KEY (`idtipo_pedido`)
+    REFERENCES `pipo_database`.`tipo_pedido` (`idtipo_pedido`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`lote_producto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`lote_producto` (
+  `producto_idproducto` INT NOT NULL,
+  `producto_marca_idmarca` INT NOT NULL,
+  `lote_productos_idlote_productos` INT NOT NULL,
+  PRIMARY KEY (`producto_idproducto`, `producto_marca_idmarca`, `lote_productos_idlote_productos`),
+  INDEX `fk_producto_has_lote_productos_lote_productos1_idx` (`lote_productos_idlote_productos` ASC) VISIBLE,
+  INDEX `fk_producto_has_lote_productos_producto1_idx` (`producto_idproducto` ASC, `producto_marca_idmarca` ASC) VISIBLE,
+  CONSTRAINT `fk_producto_has_lote_productos_producto1`
+    FOREIGN KEY (`producto_idproducto` , `producto_marca_idmarca`)
+    REFERENCES `pipo_database`.`producto` (`idproducto` , `marca_idmarca`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_producto_has_lote_productos_lote_productos1`
+    FOREIGN KEY (`lote_productos_idlote_productos`)
+    REFERENCES `pipo_database`.`lote_productos` (`idlote_productos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `pipo_database`.`admin_nota_credito`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipo_database`.`admin_nota_credito` (
+  `administrador_idadministrador` INT NOT NULL,
+  `administrador_persona_idpersona` INT NOT NULL,
+  `nota_credito_idnota_credito` INT NOT NULL,
+  `nota_credito_cliente_idcliente` INT UNSIGNED NOT NULL,
+  `nota_credito_cliente_persona_idpersona` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`administrador_idadministrador`, `administrador_persona_idpersona`, `nota_credito_idnota_credito`, `nota_credito_cliente_idcliente`, `nota_credito_cliente_persona_idpersona`),
+  INDEX `fk_administrador_has_nota_credito_nota_credito1_idx` (`nota_credito_idnota_credito` ASC, `nota_credito_cliente_idcliente` ASC, `nota_credito_cliente_persona_idpersona` ASC) VISIBLE,
+  INDEX `fk_administrador_has_nota_credito_administrador1_idx` (`administrador_idadministrador` ASC, `administrador_persona_idpersona` ASC) VISIBLE,
+  CONSTRAINT `fk_administrador_has_nota_credito_administrador1`
+    FOREIGN KEY (`administrador_idadministrador` , `administrador_persona_idpersona`)
+    REFERENCES `pipo_database`.`administrador` (`idadministrador` , `persona_idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_administrador_has_nota_credito_nota_credito1`
+    FOREIGN KEY (`nota_credito_idnota_credito` , `nota_credito_cliente_idcliente` , `nota_credito_cliente_persona_idpersona`)
+    REFERENCES `pipo_database`.`nota_credito` (`idnota_credito` , `cliente_idcliente` , `cliente_persona_idpersona`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

@@ -33,32 +33,6 @@ routes.get("/idCliente", async (req, res)=>{
     res.status(result.status).send(result.message)
 });
 
-routes.get("/dni/:dni",async(req,res,next)=>{
-    try {
-        const dni = req.params.dni
-        const browser = await puppeteer.launch()
-        const page = await browser.newPage()
-        await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 OPR/93.0.0.0")
-        await page.goto('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp')
-        await page.waitForSelector("#btnAceptar")
-        await page.click("#btnPorDocumento");
-        await page.type("#txtNumeroDocumento",dni);
-        await Promise.all([page.click("#btnAceptar"),page.waitForNavigation()])
-        const result = await page.evaluate(()=>{
-            var el = document.querySelectorAll(".list-group-item-heading")
-            const text = el[1].innerHTML.split(" ")
-            return {
-                apellido : "".concat(text[0]," ",text[1]),
-                nombre : "".concat(text[2], " ",text[3])
-            }
-        });
-        await browser.close()
-        res.send(result)
-    } catch (error) {
-        res.sendStatus(500)
-    }
-});
-
 routes.put('/',(req,res,next)=>{
     const authHeader = req.headers["authorization"];
     if (authHeader == null) return res.sendStatus(403);
@@ -74,6 +48,13 @@ routes.put("/name/:name",async (req, res)=>{
     const result = await Clients.UpdateNombre(idCliente, name)
     res.status(result.status).send(result.message);
 });
+
+routes.put("/apellido/:apellido",async (req,res)=>{
+    const apellido = req.params.apellido.toUpperCase()
+    const idCliente = req.headers['client-id']
+    const result = await Clients.UpdateApellido(idCliente, apellido);
+    res.send(result) 
+})
 
 routes.put("/tel/:telephone", async (req, res)=>{
     const tel = Number(req.params.telephone)
@@ -105,6 +86,11 @@ routes.post('/',async (req, res)=>{
     res.send(result)
 });
 
+routes.delete('/',async(req,res)=>{
+    const idcliente = req.headers['client-id']
+    const response = await Clients.DeleteClient(idcliente)
+    res.send(response);
+})
 
 
 module.exports = routes;

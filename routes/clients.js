@@ -7,6 +7,7 @@ routes.get('/', async (req, res, next)=>{
     const result = await Clients.GetClients()
     res.status(result.status).send(result.message); 
 });
+
 routes.get('/s/nombre/:name',async(req,res)=>{
     const q = req.params.name
     const response = await Clients.GetClientGeneral();

@@ -34,8 +34,8 @@ router.get('/signin',async (req,res, next)=>{
     const user = req.headers['user-name'] || ''
     // Validamos si el usuario esta en nuestra base de datos
     try {
-        const result = await ValidateUser(user)
-        if (result == 2) return res.redirect('http://localhost:8086/costumer/');
+        const result = await ValidateUser(user);
+        if (result == 0) return res.redirect("http://localhost:8087/costumer/")
         next();
     } catch (error) {
         console.log(error);
@@ -49,8 +49,8 @@ router.get('/signin', async (req, res)=>{
         const pass = req.headers['user-password'] || ''
         const admin = await Admin.GetPassHashByUser(user) || {message : []};
         if (!admin.message[0]) return res.sendStatus(404);
-    
-        const result = await bcrypt.compare(pass, admin.message[0].contrasenna_hash);
+
+        const result = bcrypt.compare(pass, admin.message[0].contrasenna_hash);
         if (!result) return res.status(400).send({message : 'Contraseña inválida'});
     
         const body = await Admin.GetAdmin(user);
@@ -60,6 +60,7 @@ router.get('/signin', async (req, res)=>{
             data: { token }
         })
     } catch (error) {
+        console.log(error);
         res.sendStatus(500);
     }
 });

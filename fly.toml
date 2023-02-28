@@ -7,6 +7,30 @@ processes = []
 
 [env]
 
+[build.args]
+  DATABASE_USER = 'wvs4r27u4dqdgdn0t12j'
+  DATABASE_PASSWORD = 'pscale_pw_Bfmdn5aQffuSAvIF85Dxnkituvkv0kWqB9HhizrVAsh'
+  DATABASE_NAME = 'dbpipo'
+  DATABASE_HOST = 'us-east.connect.psdb.cloud'
+
+  TOKEN_SECRET = "pipotex1977"
+
+  GET_CLIENTS_GENERAL = "SELECT cliente.idcliente, persona.nombre, persona.apellido, cliente.ultimo_pago, cliente.saldo, cliente.estrellas, persona.genero FROM cliente, persona WHERE persona.idpersona = cliente.persona_idpersona; "
+  GET_IDPERSONA = "SELECT persona_idpersona FROM cliente WHERE idcliente = ?"
+
+  UPDATE_NAME_PERSON = "UPDATE persona SET nombre = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
+  UPDATE_TEL_PERSON = "UPDATE persona SET telefono = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
+  UPDATE_LAST_NAME_PERSON = "UPDATE persona SET apellido = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
+  UPDATE_RAZON_SOCIAL = "UPDATE persona SET razon_social = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
+  UPDATE_EMAIL = "UPDATE cliente SET email = ? WHERE idcliente = ? ;"
+  UPDATE_SALDO = "UPDATE cliente SET saldo = ? WHERE idcliente = ? ;"
+
+  CREATE_PERSON = "INSERT INTO persona (nombre,apellido,fecha_cumpleannos,fecha_creacion,telefono,razon_social,genero,esAdmin) VALUES (?,?,?,?,?,?,?,?)"
+  CREATE_CLIENT = "INSERT INTO cliente (idcliente,persona_idpersona,credito_limite,detalle,saldo,email,duracion_credit,esVip,estrellas) VALUES(?,?,?,?,?,?,?,?,?)"
+
+  DELETE_PERSON = "DELETE FROM persona WHERE idpersona = ? "
+  DELETE_CLIENT = "DELETE FROM cliente WHERE idcliente = ? "
+
 [experimental]
   auto_rollback = true
 

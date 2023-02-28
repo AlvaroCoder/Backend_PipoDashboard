@@ -13,11 +13,9 @@ RUN volta install node@${NODE_VERSION}
 RUN mkdir /app
 WORKDIR /app
 
-# NPM will not install any package listed in "devDependencies" when NODE_ENV is set to "production",
-# to install all modules: "npm install --production=false".
-# Ref: https://docs.npmjs.com/cli/v9/commands/npm-install#description
-
 ENV NODE_ENV production
+
+EXPOSE 8080
 
 COPY . .
 
@@ -33,4 +31,4 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV PATH /root/.volta/bin:$PATH
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "start" ]

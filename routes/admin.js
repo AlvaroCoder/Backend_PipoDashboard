@@ -35,7 +35,6 @@ router.get('/signin',async (req,res, next)=>{
     // Validamos si el usuario esta en nuestra base de datos
     try {
         const result = await ValidateUser(user);
-        if (result == 0) return res.redirect("http://localhost:8087/costumer/")
         next();
     } catch (error) {
         console.log(error);

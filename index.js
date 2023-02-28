@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const PORT = process.env.PORT || 8087
+const PORT = process.env.PORT || 3000
 
 const costumer = require('./routes/costumers');
 const admin = require('./routes/admin');
@@ -23,5 +23,5 @@ app.use('/credits',credits);
 app.use('/test',test_mysql);
 
 app.listen(PORT,()=>{
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on server ${PORT}`);
 });

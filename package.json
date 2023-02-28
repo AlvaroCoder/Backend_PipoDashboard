@@ -4,8 +4,7 @@
   "description": "\"Backend for panel dashboard Pipo\"",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "test"
+    "start": "nodemon index.js"
   },
   "author": "Alvaro",
   "license": "ISC",

@@ -3,5 +3,8 @@
 
 ./database.txt
 database.txt
-
+.dockerignore
+Dockerfile
+/Dockerfile
+fly.toml
 .env

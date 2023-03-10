@@ -72,12 +72,21 @@ routes.put("/email",async (req,res)=>{
     res.send(Clients.message);
 });
 
+routes.put("/saldo",async(req,res)=>{
+    const saldo = req.headers['client-saldo']
+    const idCliente = req.headers['client-id']
+    await Clients.UpdateSaldo(idCliente, saldo);
+    res.send(Clients.message)
+})
+
+
 routes.put("/rznsc",async(req,res)=>{
     const idCliente = req.headers['client-id']
     const razon_social = req.headers['client-rznsc']
     await Clients.UpdateRazonSocial(idCliente, razon_social)
     res.send(Clients.message);
-})
+});
+
 
 routes.post('/',(req,res, next)=>{
     const authHeader = req.headers["authorization"];

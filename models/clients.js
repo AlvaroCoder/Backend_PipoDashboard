@@ -1,6 +1,6 @@
 const pool = require('../mysql/mysql_querys');
 
-const GET_CLIENTS = "SELECT cliente.idcliente, persona.razon_social, persona.nombre, persona.apellido,persona.fecha_cumpleannos, cliente.ultimo_pago, cliente.duracion_credit, cliente.saldo, cliente.credito_limite, cliente.esVip,persona.genero FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona;"
+const GET_CLIENTS = "SELECT cliente.idcliente, persona.razon_social AS documento, persona.nombre, persona.apellido,persona.fecha_cumpleannos, persona.telefono,cliente.ultimo_pago, cliente.duracion_credit, cliente.saldo, cliente.credito_limite, cliente.esVip,persona.genero FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona;"
 const GET_CLIENTS_GENERAL = process.env.GET_CLIENTS_GENERAL
 const GET_CLIENT_BY_ID = "SELECT persona.nombre, persona.apellido, cliente.ultimo_pago, cliente.saldo, cliente.credito_limite FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
 const GET_IDPERSONA = process.env.GET_IDPERSONA

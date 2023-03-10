@@ -35,6 +35,9 @@ router.get('/signin',async (req,res, next)=>{
     // Validamos si el usuario esta en nuestra base de datos
     try {
         const result = await ValidateUser(user);
+        if (result == 0) {
+             return;
+        }
         next();
     } catch (error) {
         console.log(error);

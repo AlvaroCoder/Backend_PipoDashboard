@@ -103,12 +103,12 @@ routes.post('/',async (req, res)=>{
     const date = new Date()
     body.idcliente = uuid.v4()
     body.fecha_creacion = date.getFullYear()+'-'+(date.getUTCMonth()+1).toString().padStart(2, "0")+'-'+date.getUTCDate().toString().padStart(2, "0")
-    body.razon_social = Number(body.razon_social)
-    body.credito_limite = Number(body.credito_limite)
+    body.razon_social = Number(body.nro_doc)
+    body.credito_limite = Number(body.credito_limite) || 200
     body.nombre = body.nombre.toUpperCase();
     body.apellido = body.apellido.toUpperCase();
-    await Clients.Create(body)
-    res.send(Clients.message)
+    // await Clients.Create(body)
+    res.status(202).send(Clients.message)
 });
 
 routes.delete('/',async(req,res)=>{

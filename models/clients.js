@@ -1,8 +1,8 @@
 const pool = require('../mysql/mysql_querys');
 
-const GET_CLIENTS = "SELECT cliente.idcliente, persona.razon_social AS documento, persona.nombre, persona.apellido,persona.fecha_cumpleannos, persona.telefono,cliente.ultimo_pago, cliente.duracion_credit, cliente.saldo, cliente.credito_limite, cliente.esVip,persona.genero FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona;"
+const GET_CLIENTS = "SELECT cliente.idcliente, persona.razon_social AS documento, persona.nombre, persona.apellido,persona.fecha_cumpleannos, persona.telefono,persona.direccion, cliente.saldo, cliente.credito_limite, cliente.esVip, persona.genero, images.url FROM persona, cliente, images WHERE persona.idpersona = cliente.persona_idpersona AND images.name = persona.genero;"
 const GET_CLIENTS_GENERAL = process.env.GET_CLIENTS_GENERAL
-const GET_CLIENT_BY_ID = "SELECT persona.nombre, persona.apellido, cliente.ultimo_pago, cliente.saldo, cliente.credito_limite FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
+const GET_CLIENT_BY_ID = "SELECT persona.razon_social AS documento, persona.nombre,persona.apellido, persona.fecha_cumpleannos, persona.telefono, persona.genero,cliente.ultimo_pago, cliente.saldo, cliente.credito_limite, cliente.email, cliente.estrellas, cliente.detalle FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
 const GET_IDPERSONA = process.env.GET_IDPERSONA
 
 const UPDATE_NAME_PERSON = process.env.UPDATE_NAME_PERSON
@@ -25,13 +25,14 @@ const Clients ={
     message : {error : false, status : 202, message : ''},
     Create : async function (body = Object) {
         try {
-            const {idcliente, nombre, apellido, fecha_cumpleannos, fecha_creacion, telefono, razon_social, credito_limite, email,genero, vip,duracion_credit, estrellas,detalle_cliente} = body;
-            const id_persona = await pool.execute(CREATE_PERSON, [nombre || '', apellido || '', fecha_cumpleannos || '', fecha_creacion || '', telefono || 0, razon_social || 0, genero || '', 0]).then(([row,field])=>{
+            const {idcliente, nombre, apellido, fecha_cumpleannos, fecha_creacion, telefono, nro_doc, credito_limite, correo,genero, vip,duracion_credit, estrellas,detalle_cliente, direccion} = body;
+            const id_persona = await pool.execute(CREATE_PERSON, [nombre || '', apellido || '', fecha_cumpleannos || fecha_creacion, fecha_creacion || '', telefono || 0, nro_doc || 0, genero || '', 0, direccion || '']).then(([row,field])=>{
                 return row.insertId;
             })
-            await pool.execute(CREATE_CLIENT,[idcliente,id_persona, credito_limite||200, detalle_cliente||'',credito_limite || 200,email||'',duracion_credit||'30d', vip||0,estrellas||5]);
+            await pool.execute(CREATE_CLIENT,[idcliente,id_persona, credito_limite||200, detalle_cliente||'',credito_limite || 200,correo||'',duracion_credit||'30d', vip||0,estrellas||5]);
             this.message.message = "Client Created Succesfully"
         } catch (error) {
+            console.log(error);
             this.message.error = true
             this.message.status = 500
             this.message.message = error
@@ -47,6 +48,9 @@ const Clients ={
             this.message.status = 404
         });
         return this.message;
+    },
+    GetImages : async function () {
+        await pool.query()  
     },
     GetClientGeneral : async function () {
         try {
@@ -66,7 +70,7 @@ const Clients ={
     GetClientBytId : async function (idCliente) {
         await pool.query(GET_CLIENT_BY_ID, [idCliente]).then((row, fields)=>{
             this.message.error = false
-            this.message.message = row[0]
+            this.message.message = row[0][0]
             this.message.status = 202
         }).catch((err)=>{
             this.message.error = true

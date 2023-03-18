@@ -25,7 +25,7 @@ processes = []
   UPDATE_EMAIL = "UPDATE cliente SET email = ? WHERE idcliente = ? ;"
   UPDATE_SALDO = "UPDATE cliente SET saldo = ? WHERE idcliente = ? ;"
 
-  CREATE_PERSON = "INSERT INTO persona (nombre,apellido,fecha_cumpleannos,fecha_creacion,telefono,razon_social,genero,esAdmin) VALUES (?,?,?,?,?,?,?,?)"
+  CREATE_PERSON = "INSERT INTO persona (nombre,apellido,fecha_cumpleannos,fecha_creacion,telefono,razon_social,genero,esAdmin,direccion) VALUES (?,?,?,?,?,?,?,?,?)"
   CREATE_CLIENT = "INSERT INTO cliente (idcliente,persona_idpersona,credito_limite,detalle,saldo,email,duracion_credit,esVip,estrellas) VALUES(?,?,?,?,?,?,?,?,?)"
 
   DELETE_PERSON = "DELETE FROM persona WHERE idpersona = ? "

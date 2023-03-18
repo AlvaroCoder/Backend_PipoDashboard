@@ -1,6 +1,7 @@
 const pool = require('../mysql/mysql_querys');
 const GET_ID_PRODUCT = "SELECT COUNT(*)  AS IdProduct FROM producto;";
 const GET_ID_MARCA = "SELECT COUNT(*) FROM marca;";
+const GET_CATEGORY = "SELECT nombre, valor AS displayName FROM categoria;"
 const GET_MARCAS = "SELECT idmarca AS id,nombre FROM marca";
 const GET_ALMACENES = "SELECT idalmacen AS id, codigo, nombre_almacen AS nombre FROM almacen;"
 const GET_TIPO_LOTE = "SELECT idtipo_pedido AS id, nombre FROM tipo_pedido;"
@@ -68,6 +69,9 @@ const Product = {
         return await pool.execute(SAVE_PROVEEDOR,[proveedor]).then(el=>{
             return el[0].length
         });
+    },
+    GetCategoria : async function () {
+        return await pool.query(GET_CATEGORY).then(el=>el[0])
     },
     GetProduct : async function (name) {
         

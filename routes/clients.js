@@ -4,13 +4,19 @@ const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
 
 routes.get('/', async (req, res, next)=>{
-    const result = await Clients.GetClients()
-    res.status(result.status).send(result.message); 
+    const response = await Clients.GetClients();
+    res.status(response.status).send(response.message); 
 });
+
+routes.get('/:idcliente',async (req,res)=>{
+    const id = req.params.idcliente
+    const response = await Clients.GetClientBytId(id);
+    res.send(response.message);
+})
 
 routes.get('/s/nombre/:name',async(req,res)=>{
     const q = req.params.name
-    const response = await Clients.GetClientGeneral();
+    const response = await Clients.GetClients();
     const result = response.message.filter((cliente)=>{
         const {nombre} = cliente
         return nombre.toUpperCase().includes(q.toUpperCase())
@@ -19,7 +25,7 @@ routes.get('/s/nombre/:name',async(req,res)=>{
 });
 routes.get('/s/apellido/:apellido',async(req,res)=>{
     const q = req.params.apellido
-    const response = await Clients.GetClientGeneral();
+    const response = await Clients.GetClients();
     const result = response.message.filter((cliente)=>{
         const {apellido} = cliente
         return apellido.toUpperCase().includes(q.toUpperCase())
@@ -103,20 +109,20 @@ routes.post('/',async (req, res)=>{
     const date = new Date()
     body.idcliente = uuid.v4()
     body.fecha_creacion = date.getFullYear()+'-'+(date.getUTCMonth()+1).toString().padStart(2, "0")+'-'+date.getUTCDate().toString().padStart(2, "0")
-    body.razon_social = Number(body.nro_doc)
+    body.nro_doc = Number(body.nro_doc)
     body.credito_limite = Number(body.credito_limite) || 200
     body.nombre = body.nombre.toUpperCase();
     body.apellido = body.apellido.toUpperCase();
-    // await Clients.Create(body)
+    console.log("🚀 ~ file: clients.js:116 ~ routes.post ~ body:", body)
+    await Clients.Create(body);
     res.status(202).send(Clients.message)
 });
 
-routes.delete('/',async(req,res)=>{
+routes.delete('/',async(req,res,next)=>{
     const authHeader = req.headers["authorization"];
     if (authHeader == null) return res.sendStatus(403);
     jwt.verify(authHeader, process.env.TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(404);
-        console.log('token_correcto');
         next();
     });
 });

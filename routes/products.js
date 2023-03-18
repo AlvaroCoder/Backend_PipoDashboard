@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const { CreateProveedor } = require('../models/product');
 
 cloudinary.config({
-    cloud_name : process.env.CLOUDINARY_CLOUD_NAME,
+    cloud_name : process.env.CLOUDINARY_NAME,
     api_key : process.env.CLOUDINARY_API_KEY,
     api_secret : process.env.CLOUDINARY_API_SECRET
 });
@@ -27,6 +27,10 @@ const fileUpload = multer({
 routes.get('/',(req, res)=>{
     
     res.send('Bienvenido product')
+});
+routes.get('/categoria',async (req,res) =>{
+    const result = await Product.GetCategoria();
+    res.send(result)
 });
 routes.get('/id',async (req,res)=>{
     const result = await Product.GetIdProduct();

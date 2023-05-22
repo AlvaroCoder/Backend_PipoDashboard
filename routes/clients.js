@@ -2,7 +2,7 @@ const routes = require('express').Router();
 const Clients = require('../models/clients');
 const uuid = require('uuid');
 const jwt = require('jsonwebtoken');
-
+const {fetchDniData, fetchRucData} = require('../services/sunat')
 routes.get('/', async (req, res, next)=>{
     const response = await Clients.GetClients();
     res.status(response.status).send(response.message); 
@@ -38,6 +38,32 @@ routes.get("/idCliente", async (req, res)=>{
     const result = await Clients.GetClientBytId(idCliente)
     res.status(result.status).send(result.message)
 });
+
+routes.get("/data/:documento",async (req,res)=>{
+    const doc = req.params.documento;
+
+    if (doc.length == 8) {
+        const data = await fetchDniData(doc)
+        const apellido = `${data.apellidoPaterno} ${data.apellidoMaterno}`
+        const nombre = data.nombres
+        const client = {
+            nombre,
+            apellido
+        }
+        res.status(202).send(client);
+        return;
+    }
+    if (doc.length == 11) {
+        const data = await fetchRucData(doc)
+        res.status(202).send(data);
+        return;
+    }
+    res.send({
+        status : 200,
+        message : 'Documento equivocado'
+    })
+
+})
 
 routes.put('/',(req,res,next)=>{
     const authHeader = req.headers["authorization"];

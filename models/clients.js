@@ -1,5 +1,8 @@
 const pool = require('../mysql/mysql_querys');
 
+
+const soloCaracteres = /^[A-Za-z]+$/;
+
 const GET_CLIENTS = "SELECT cliente.idcliente, persona.razon_social AS documento, persona.nombre, persona.apellido,persona.fecha_cumpleannos, persona.telefono,persona.direccion, cliente.saldo, cliente.credito_limite, cliente.esVip, persona.genero, images.url FROM persona, cliente, images WHERE persona.idpersona = cliente.persona_idpersona AND images.name = persona.genero;"
 const GET_CLIENTS_GENERAL = process.env.GET_CLIENTS_GENERAL
 const GET_CLIENT_BY_ID = "SELECT persona.razon_social AS documento, persona.nombre,persona.apellido, persona.fecha_cumpleannos, persona.telefono, persona.genero,cliente.ultimo_pago, cliente.saldo, cliente.credito_limite, cliente.email, cliente.estrellas, cliente.detalle FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
@@ -67,6 +70,7 @@ const Clients ={
             
         }
     },
+    
     GetClientBytId : async function (idCliente) {
         await pool.query(GET_CLIENT_BY_ID, [idCliente]).then((row, fields)=>{
             this.message.error = false

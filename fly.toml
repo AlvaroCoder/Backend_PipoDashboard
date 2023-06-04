@@ -6,8 +6,6 @@ kill_timeout = 5
 processes = []
 
 [env]
-
-[build.args]
   DATABASE_USER = 'wvs4r27u4dqdgdn0t12j'
   DATABASE_PASSWORD = 'pscale_pw_Bfmdn5aQffuSAvIF85Dxnkituvkv0kWqB9HhizrVAsh'
   DATABASE_NAME = 'dbpipo'
@@ -39,6 +37,9 @@ processes = []
   CLOUDINARY_API_SECRET = "RqejzEsCO3VGmbe0qhR_pc_Qg2Q"
   CLOUDINARY_API_KEY="939691988994216"
   CLOUDINARY_ENVIROMENT="CLOUDINARY_URL=cloudinary://939691988994216:RqejzEsCO3VGmbe0qhR_pc_Qg2Q@dru6kde3e"
+
+[build.args]
+  
 
 [experimental]
   auto_rollback = true

@@ -1,7 +1,5 @@
 const pool = require('../mysql/mysql_querys');
 
-
-
 const GET_CLIENTS_GENERAL = process.env.GET_CLIENTS_GENERAL
 const GET_CLIENT_BY_ID = process.env.GET_CLIENT_BY_ID
 const GET_IDPERSONA = process.env.GET_IDPERSONA

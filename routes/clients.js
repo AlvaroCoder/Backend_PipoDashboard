@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const {fetchDniData, fetchRucData} = require('../services/sunat')
 routes.get('/', async (req, res, next)=>{
     const response = await Clients.GetClients();
-    
     res.status(response.status).send(response.message); 
 });
 

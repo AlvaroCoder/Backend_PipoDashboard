@@ -1,3 +1,6 @@
+
+fly.toml
+
 /node_modules
 /build
 
@@ -6,5 +9,7 @@ database.txt
 .dockerignore
 Dockerfile
 /Dockerfile
-fly.toml
+
+/fly.toml
+fly
 .env

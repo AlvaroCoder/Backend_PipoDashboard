@@ -3,16 +3,16 @@ const pool = require('../mysql/mysql_querys');
 
 
 const GET_CLIENTS_GENERAL = process.env.GET_CLIENTS_GENERAL
-const GET_CLIENT_BY_ID = "SELECT persona.razon_social AS documento, persona.nombre,persona.apellido, persona.fecha_cumpleannos, persona.telefono, persona.genero,cliente.ultimo_pago, cliente.saldo, cliente.credito_limite, cliente.email AS correo, cliente.estrellas, cliente.detalle FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
+const GET_CLIENT_BY_ID = process.env.GET_CLIENT_BY_ID
 const GET_IDPERSONA = process.env.GET_IDPERSONA
-const GET_REP_PERSONA = "SELECT COUNT(*) AS repeticiones FROM persona WHERE razon_social = ?;"
+const GET_REP_PERSONA = process.env.GET_REP_PERSONA
 
-const UPDATE_PERSON = "UPDATE persona SET nombre = ?, apellido = ?, telefono = ?, razon_social = ?, genero = ?, direccion = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?);"
-const UPDATE_CLIENT = "UPDATE cliente SET  email = ? WHERE idcliente = ?;"
-const UPDATE_NAME_PERSON = process.env.UPDATE_NAME_PERSON
-const UPDATE_TEL_PERSON = process.env.UPDATE_TEL_PERSON
-const UPDATE_LAST_NAME_PERSON = process.env.UPDATE_LAST_NAME_PERSON
-const UPDATE_RAZON_SOCIAL = process.env.UPDATE_RAZON_SOCIAL
+const UPDATE_PERSON = process.env.UPDATE_PERSON;
+const UPDATE_CLIENT = process.env.UPDATE_CLIENT;
+const UPDATE_NAME_PERSON = process.env.UPDATE_NAME_PERSON;
+const UPDATE_TEL_PERSON = process.env.UPDATE_TEL_PERSON;
+const UPDATE_LAST_NAME_PERSON = process.env.UPDATE_LAST_NAME_PERSON;
+const UPDATE_RAZON_SOCIAL = process.env.UPDATE_RAZON_SOCIAL;
 const UPDATE_EMAIL = process.env.UPDATE_EMAIL;
 const UPDATE_SALDO = process.env.UPDATE_SALDO;
 

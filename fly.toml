@@ -15,9 +15,13 @@ processes = []
 
   TOKEN_SECRET = "pipotex1977"
 
-  GET_CLIENTS_GENERAL = "SELECT cliente.idcliente, persona.nombre, persona.apellido, cliente.ultimo_pago, cliente.saldo, cliente.estrellas, persona.genero FROM cliente, persona WHERE persona.idpersona = cliente.persona_idpersona; "
+  GET_CLIENTS_GENERAL = "SELECT cliente.idcliente, persona.nombre, persona.apellido, persona.razon_social AS nro_doc, persona.fecha_cumpleannos, persona.telefono,persona.direccion, cliente.saldo,cliente.email AS correo, cliente.credito_limite, cliente.esVip, persona.genero FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona ORDER BY persona.nombre ASC;"
   GET_IDPERSONA = "SELECT persona_idpersona FROM cliente WHERE idcliente = ?"
+  GET_REP_PERSONA = "SELECT COUNT(*) AS repeticiones FROM persona WHERE razon_social = ?;"
+  GET_CIENT_BY_ID = "SELECT persona.razon_social AS documento, persona.nombre,persona.apellido, persona.fecha_cumpleannos, persona.telefono, persona.genero,cliente.ultimo_pago, cliente.saldo, cliente.credito_limite, cliente.email AS correo, cliente.estrellas, cliente.detalle FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
 
+  UPDATE_PERSON = "UPDATE persona SET nombre = ?, apellido = ?, telefono = ?, razon_social = ?, genero = ?, direccion = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?);"
+  UPDATE_CLIENT = "UPDATE cliente SET  email = ? WHERE idcliente = ?;"
   UPDATE_NAME_PERSON = "UPDATE persona SET nombre = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
   UPDATE_TEL_PERSON = "UPDATE persona SET telefono = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
   UPDATE_LAST_NAME_PERSON = "UPDATE persona SET apellido = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?) ;"
@@ -30,6 +34,11 @@ processes = []
 
   DELETE_PERSON = "DELETE FROM persona WHERE idpersona = ? "
   DELETE_CLIENT = "DELETE FROM cliente WHERE idcliente = ? "
+
+  CLOUDINARY_NAME = "dru6kde3e"
+  CLOUDINARY_API_SECRET = "RqejzEsCO3VGmbe0qhR_pc_Qg2Q"
+  CLOUDINARY_API_KEY="939691988994216"
+  CLOUDINARY_ENVIROMENT="CLOUDINARY_URL=cloudinary://939691988994216:RqejzEsCO3VGmbe0qhR_pc_Qg2Q@dru6kde3e"
 
 [experimental]
   auto_rollback = true

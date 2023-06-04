@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const {fetchDniData, fetchRucData} = require('../services/sunat')
 routes.get('/', async (req, res, next)=>{
     const response = await Clients.GetClients();
+    
     res.status(response.status).send(response.message); 
 });
 
@@ -39,6 +40,12 @@ routes.get("/idCliente", async (req, res)=>{
     res.status(result.status).send(result.message)
 });
 
+routes.get("/validate/doc/:documento", async(req,res)=>{
+    const doc = req.params.documento
+    const result = await Clients.GetRepPersona(doc);
+    res.send(result)
+})
+
 routes.get("/data/:documento",async (req,res)=>{
     const doc = req.params.documento;
 
@@ -54,24 +61,35 @@ routes.get("/data/:documento",async (req,res)=>{
         return;
     }
     if (doc.length == 11) {
-        const data = await fetchRucData(doc)
+        const data = await fetchRucData(doc);
         res.status(202).send(data);
         return;
     }
-    res.send({
-        status : 200,
+    res.status(400).send({
+        error : true,
+        status : 400,
         message : 'Documento equivocado'
-    })
+    });
 
 })
 
 routes.put('/',(req,res,next)=>{
     const authHeader = req.headers["authorization"];
     if (authHeader == null) return res.sendStatus(403);
-    jwt.verify(authHeader, "secret_key", (err, user) => {
+    jwt.verify(authHeader, process.env.TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(404);
         next();
     });
+})
+
+routes.put('/', async (req,res)=>{
+    const body = req.body;
+    body.nro_doc = Number(body.nro_doc)
+    body.nombre = body.nombre.toUpperCase();
+    body.apellido = body.apellido.toUpperCase();
+
+    await Clients.UpdateClient(body);
+    res.send(Clients.message);
 })
 
 routes.put("/name/:name",async (req, res)=>{
@@ -125,7 +143,6 @@ routes.post('/',(req,res, next)=>{
     if (authHeader == null) return res.sendStatus(403);
     jwt.verify(authHeader, process.env.TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(404);
-        console.log('token_correcto');
         next();
     });
 });
@@ -139,9 +156,19 @@ routes.post('/',async (req, res)=>{
     body.credito_limite = Number(body.credito_limite) || 200
     body.nombre = body.nombre.toUpperCase();
     body.apellido = body.apellido.toUpperCase();
-    console.log("🚀 ~ file: clients.js:116 ~ routes.post ~ body:", body)
+
+    const repClient = await Clients.GetRepPersona(body.nro_doc);
+    if (repClient.message > 0) {
+        res.send({
+            error : true,
+            message : 'Ese cliente ya existe',
+            status : 400
+        })
+        return;
+    }
     await Clients.Create(body);
     res.status(202).send(Clients.message)
+
 });
 
 routes.delete('/',async(req,res,next)=>{

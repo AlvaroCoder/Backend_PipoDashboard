@@ -1,19 +1,20 @@
 const pool = require('../mysql/mysql_querys');
 
 
-const soloCaracteres = /^[A-Za-z]+$/;
 
-const GET_CLIENTS = "SELECT cliente.idcliente, persona.razon_social AS documento, persona.nombre, persona.apellido,persona.fecha_cumpleannos, persona.telefono,persona.direccion, cliente.saldo, cliente.credito_limite, cliente.esVip, persona.genero, images.url FROM persona, cliente, images WHERE persona.idpersona = cliente.persona_idpersona AND images.name = persona.genero;"
 const GET_CLIENTS_GENERAL = process.env.GET_CLIENTS_GENERAL
-const GET_CLIENT_BY_ID = "SELECT persona.razon_social AS documento, persona.nombre,persona.apellido, persona.fecha_cumpleannos, persona.telefono, persona.genero,cliente.ultimo_pago, cliente.saldo, cliente.credito_limite, cliente.email, cliente.estrellas, cliente.detalle FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
+const GET_CLIENT_BY_ID = "SELECT persona.razon_social AS documento, persona.nombre,persona.apellido, persona.fecha_cumpleannos, persona.telefono, persona.genero,cliente.ultimo_pago, cliente.saldo, cliente.credito_limite, cliente.email AS correo, cliente.estrellas, cliente.detalle FROM persona, cliente WHERE persona.idpersona = cliente.persona_idpersona AND cliente.idcliente = ?;"
 const GET_IDPERSONA = process.env.GET_IDPERSONA
+const GET_REP_PERSONA = "SELECT COUNT(*) AS repeticiones FROM persona WHERE razon_social = ?;"
 
+const UPDATE_PERSON = "UPDATE persona SET nombre = ?, apellido = ?, telefono = ?, razon_social = ?, genero = ?, direccion = ? WHERE idpersona = (SELECT persona_idpersona FROM cliente WHERE idcliente = ?);"
+const UPDATE_CLIENT = "UPDATE cliente SET  email = ? WHERE idcliente = ?;"
 const UPDATE_NAME_PERSON = process.env.UPDATE_NAME_PERSON
 const UPDATE_TEL_PERSON = process.env.UPDATE_TEL_PERSON
 const UPDATE_LAST_NAME_PERSON = process.env.UPDATE_LAST_NAME_PERSON
 const UPDATE_RAZON_SOCIAL = process.env.UPDATE_RAZON_SOCIAL
-const UPDATE_EMAIL = process.env.UPDATE_EMAIL
-const UPDATE_SALDO = process.env.UPDATE_SALDO
+const UPDATE_EMAIL = process.env.UPDATE_EMAIL;
+const UPDATE_SALDO = process.env.UPDATE_SALDO;
 
 const CREATE_PERSON = process.env.CREATE_PERSON
 const CREATE_CLIENT = process.env.CREATE_CLIENT
@@ -42,7 +43,7 @@ const Clients ={
         }
     },
     GetClients : async function () {
-        await pool.query(GET_CLIENTS)
+        await pool.query(GET_CLIENTS_GENERAL)
         .then((row, fields)=>{
             this.message.message = row[0]
         }).catch((err)=>{
@@ -58,8 +59,8 @@ const Clients ={
     GetClientGeneral : async function () {
         try {
             await pool.query(GET_CLIENTS_GENERAL)
-            .then(res=>{
-                this.message.message = res[0]
+            .then((row,field)=>{
+                this.message.message = row[0]
             }).catch(err=>{
                 this.message.error = true
                 this.message.message  = err
@@ -70,7 +71,14 @@ const Clients ={
             
         }
     },
-    
+    GetRepPersona : async function (doc) {
+        await pool.query(GET_REP_PERSONA, [doc]).then((row, field)=>{
+            this.message.error = false
+            this.message.message = row[0][0].repeticiones
+            this.message.status = 202
+        })
+        return this.message
+    },
     GetClientBytId : async function (idCliente) {
         await pool.query(GET_CLIENT_BY_ID, [idCliente]).then((row, fields)=>{
             this.message.error = false
@@ -82,6 +90,17 @@ const Clients ={
             this.message.status = 404
         });
         return this.message;
+    },
+    UpdateClient : async function (body=Object) {
+        const {nombre, apellido, telefono, nro_doc, genero, direccion, idcliente, correo } = body;
+      try{
+        await pool.execute(UPDATE_PERSON,[nombre, apellido, telefono, nro_doc, genero, direccion, idcliente])
+        await pool.execute(UPDATE_CLIENT, [correo, idcliente])
+      } catch (error){
+        this.message.error = true
+        this.message.message = error
+        this.message.status = 404
+      } 
     },
     UpdateNombre : async function (idCliente = String , newNombre = String) {
         try {
